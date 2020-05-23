@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import argparse
 import json
 
 import requests
@@ -8,10 +10,9 @@ from yaspin import yaspin
 data = {'lectures': []}
 
 
-def main():
+def main(args):
     with yaspin(text="Crawling 🕸", color="yellow") as spinner:
-        pages = [requests.get("http://delos.aueb.gr/opendelos/search?crs=fc81868e&sa={}".format(i + 1)) for i in
-                 range(3)]
+        pages = [requests.get("{}&sa={}".format(args.link, i + 1)) for i in range(args.pages)]
         soups = [BeautifulSoup(x.content, 'lxml') for x in pages]
         for soup in soups:
             container = soup.find("div", {"id": "detailed_view"})
@@ -30,6 +31,7 @@ def main():
                     break
         dump(data)
         spinner.ok("✅ ")
+        spinner.write("Done!")
 
 
 def dump(what):
@@ -38,4 +40,8 @@ def dump(what):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Crawler for the opendelos project.')
+    parser.add_argument('--link', type=str, help='the page to crawl')
+    parser.add_argument('--pages', type=int, help="how many pages to crawl")
+    args = parser.parse_args()
+    main(args)
