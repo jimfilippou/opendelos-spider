@@ -20,7 +20,7 @@ def main(args):
             for item in courses_wrappers:
                 try:
                     title = item.find("a", {"class": "lecture-title"}).text.strip()
-                    author = "Τουμπής Σταύρος"
+                    author = args.author
                     code = item.find("a", {"class": "lecture-title"}).attrs['href'].split('rid=')[1]
                     data['lectures'].append({
                         'title': title,
@@ -43,5 +43,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Crawler for the opendelos project.')
     parser.add_argument('--link', type=str, help='the page to crawl')
     parser.add_argument('--pages', type=int, help="how many pages to crawl")
+    parser.add_argument('--author', type=str, help="Author of the lectures")
     args = parser.parse_args()
     main(args)
